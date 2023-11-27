@@ -14,7 +14,11 @@ const getModelInfo = async function () {
             modelNotFound.value = false;
             modelData.value.name = res.data.name;
             modelData.value.date = res.data.date;
-            modelData.value.params = res.data.params;
+            modelData.value.params = JSON.stringify(
+                JSON.parse(res.data.params),
+                null,
+                4,
+            );
             return;
         }
         throw new Error('Сервер вернул некорректный статус ответа');
@@ -42,17 +46,14 @@ onMounted(() => {
         <div v-if="modelNotFound">
             <h1 style="margin-bottom: 20px">Модель отсутствует</h1>
             <div class="button-border" @click="useModel">
-                Загрузить модель из хранилища
+                Получить новую модель
             </div>
         </div>
         <div v-else>
             <h1>{{ modelData.name }}</h1>
-            <div style="margin-bottom: 10px">
-                Дата обновления: {{ modelData.date }}
-            </div>
-            <div style="margin-bottom: 10px">
-                Параметры обучения: {{ modelData.params }}
-            </div>
+            <div class="label ta-l">Дата обновления: {{ modelData.date }}</div>
+            <div class="label ta-l">Параметры обучения:</div>
+            <pre class="ta-l">{{ modelData.params }}</pre>
             <div style="display: flex">
                 <RouterLink :to="{ name: 'FileBlock' }">
                     <div class="button-green">Использовать модель</div>

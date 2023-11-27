@@ -84,3 +84,11 @@ h1 {
   top: 20px;
   left: 20px;
 }
+
+.ta-l {
+  text-align: left;
+}
+
+.label {
+  margin-bottom: 10px
+}
