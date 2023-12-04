@@ -158,7 +158,7 @@ const selectFile = function () {
 
 .select-image {
     width: 350px;
-    height: 350px;
+    height: 300px;
     margin-top: 10px;
 }
 
