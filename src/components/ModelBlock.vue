@@ -31,9 +31,8 @@ const getModelInfo = async function () {
     }
 };
 
-const useModel = async function () {
-    const res = await axios.put(import.meta.env.VITE_SERVER + '/use-model');
-    if (res.status === 200) getModelInfo();
+const updateModel = async function () {
+    return;
 };
 
 onMounted(() => {
@@ -45,7 +44,7 @@ onMounted(() => {
     <div class="modelblock">
         <div v-if="modelNotFound">
             <h1 style="margin-bottom: 20px">Модель отсутствует</h1>
-            <div class="button-border" @click="useModel">
+            <div class="button-border" @click="updateModel">
                 Получить новую модель
             </div>
         </div>
@@ -61,7 +60,7 @@ onMounted(() => {
                 <div
                     class="button-border"
                     style="margin-left: 10px"
-                    @click="useModel"
+                    @click="updateModel"
                 >
                     Обновить модель
                 </div>
@@ -70,3 +69,9 @@ onMounted(() => {
         <span class="error">{{ error }}</span>
     </div>
 </template>
+
+<style scoped>
+.modelblock {
+    padding: 20px;
+}
+</style>
