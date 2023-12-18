@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import axios, { AxiosError } from 'axios';
 import { onMounted, ref } from 'vue';
-import type { ModelData } from '@/types';
+import { socket } from '@/socket';
+import type { ResponseModelInfo, ModelData } from '@/types';
 
 const modelData = ref({} as unknown as ModelData);
 const modelNotFound = ref(false);
@@ -9,24 +9,25 @@ const error = ref();
 
 const getModelInfo = async function () {
     try {
-        const res = await axios.get(import.meta.env.VITE_SERVER);
-        if (res.status === 200) {
-            modelNotFound.value = false;
-            modelData.value.name = res.data.name;
-            modelData.value.date = res.data.date;
-            modelData.value.params = JSON.stringify(
-                JSON.parse(res.data.params),
-                null,
-                4,
-            );
-            return;
-        }
-        throw new Error('Сервер вернул некорректный статус ответа');
-    } catch (e: unknown) {
-        if ((e as AxiosError).response?.status === 404) {
-            modelNotFound.value = true;
-            return;
-        }
+        socket.emit('get-model-info', null, (res: ResponseModelInfo) => {
+            if (res.status === 200) {
+                modelNotFound.value = false;
+                modelData.value.name = res.name;
+                modelData.value.date = res.date;
+                modelData.value.params = JSON.stringify(
+                    JSON.parse(res.params),
+                    null,
+                    4,
+                );
+                return;
+            }
+            if (res.status === 404) {
+                modelNotFound.value = true;
+                throw new Error('Модель отсутствует');
+            }
+            throw new Error('Сервер вернул некорректный статус ответа');
+        });
+    } catch (e) {
         error.value = e;
     }
 };
@@ -43,7 +44,7 @@ onMounted(() => {
 <template>
     <div class="modelblock">
         <div v-if="modelNotFound">
-            <h1 style="margin-bottom: 20px">Модель отсутствует</h1>
+            <h1 style="margin-bottom: 20px">{{ error }}</h1>
             <div class="button-border" @click="updateModel">
                 Получить новую модель
             </div>
@@ -57,13 +58,15 @@ onMounted(() => {
                 <RouterLink :to="{ name: 'FileBlock' }">
                     <div class="button-green">Использовать модель</div>
                 </RouterLink>
-                <div
-                    class="button-border"
-                    style="margin-left: 10px"
-                    @click="updateModel"
-                >
-                    Обновить модель
-                </div>
+                <RouterLink :to="{ name: 'TrainBlock' }">
+                    <div
+                        class="button-border"
+                        style="margin-left: 10px"
+                        @click="updateModel"
+                    >
+                        Обновить модель
+                    </div>
+                </RouterLink>
             </div>
         </div>
         <span class="error">{{ error }}</span>

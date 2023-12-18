@@ -64,6 +64,10 @@ select {
   width: 170px;
 }
 
+input {
+  padding: 0px 10px;
+}
+
 .button-green {
   background-color: #4CAF50;
   border: none;
@@ -74,6 +78,12 @@ select {
   display: inline-block;
   font-size: 16px;
   cursor: pointer;
+}
+
+.to-back {
+  position: absolute;
+  top: 20px;
+  left: 20px;
 }
 
 .error {
