@@ -13,6 +13,11 @@ const routes = [
         component: () => import('@/components/FileBlock.vue'),
     },
     {
+        path: '/train-model',
+        name: 'TrainBlock',
+        component: () => import('@/components/TrainBlock.vue'),
+    },
+    {
         path: '/:pathMatch(.*)*',
         name: 'NotFound',
         component: () => import('@/components/NotFound.vue'),

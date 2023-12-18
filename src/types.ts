@@ -1,4 +1,4 @@
-type classes =
+type ClassNames =
     | 'cane'
     | 'cavallo'
     | 'elefante'
@@ -10,6 +10,21 @@ type classes =
     | 'scoiattolo'
     | 'ragno';
 
+type ParamNames =
+    | 'test-size'
+    | 'batch-size'
+    | 'img-shape'
+    | 'learn-rate'
+    | 'epochs'
+    | 'optim';
+
+export type ResponseModelInfo = {
+    status: number;
+    name: string;
+    date: string;
+    params: string;
+};
+
 export type ModelData = {
     name: string;
     date: string;
@@ -18,5 +33,10 @@ export type ModelData = {
 
 export type Classes = {
     // eslint-disable-next-line no-unused-vars
-    [x in classes]: string;
+    [x in ClassNames]: string;
+};
+
+export type Params = {
+    // eslint-disable-next-line no-unused-vars
+    [x in ParamNames]: string;
 };

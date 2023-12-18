@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import axios from 'axios';
 import { ref } from 'vue';
+import { socket } from '@/socket';
 import type { Classes } from '@/types';
 
 const CLASSES: Classes = {
@@ -34,25 +34,22 @@ const useModel = async function () {
             'file-block',
         ) as HTMLInputElement;
         const file = fileBlock.files![0];
-        const formData = new FormData();
-        formData.append('class', select.value);
-        formData.append('file', file);
-        const res = await axios.put(
-            import.meta.env.VITE_SERVER + '/use-model',
-            formData,
-            {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            },
-        );
-        if (res.status === 200) {
-            wrongResult.value =
-                CLASSES[select.value as keyof Classes] !== res.data;
-            result.value = res.data;
-            inProcess.value = false;
-            return;
-        }
-        throw new Error('Сервер вернул некорректный статус ответа');
-    } catch (e: unknown) {
+        const formData = {
+            class: select.value,
+            filename: file.name,
+            file,
+        };
+        socket.emit('use-model', formData, (res: any) => {
+            if (res.status === 200) {
+                wrongResult.value =
+                    CLASSES[select.value as keyof Classes] !== res.result;
+                result.value = res.result;
+                inProcess.value = false;
+                return;
+            }
+            throw new Error('Сервер вернул некорректный статус ответа');
+        });
+    } catch (e) {
         inProcess.value = false;
         error.value = e;
     }
@@ -142,12 +139,6 @@ const selectFile = function () {
 .file-selection {
     padding: 20px;
     border: 1px solid darkgray;
-}
-
-.to-back {
-    position: absolute;
-    top: 20px;
-    left: 20px;
 }
 
 .use-block {
