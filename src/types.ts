@@ -40,3 +40,18 @@ export type Params = {
     // eslint-disable-next-line no-unused-vars
     [x in ParamNames]: string;
 };
+
+export type TrainResults = {
+    status: number;
+    result: {
+        epoch: number;
+        iter: number;
+        loss: number;
+    };
+};
+
+export type SocketState = {
+    connected: boolean;
+    inProcess: boolean;
+    results: TrainResults[][];
+};
