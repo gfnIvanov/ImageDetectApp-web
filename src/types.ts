@@ -52,6 +52,6 @@ export type TrainResults = {
 
 export type SocketState = {
     connected: boolean;
-    inProcess: boolean;
+    process: 'train' | 'check' | 'done' | undefined;
     results: TrainResults[][];
 };
