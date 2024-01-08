@@ -4,7 +4,7 @@ import type { SocketState, TrainResults } from './types';
 
 export const state = reactive<SocketState>({
     connected: false,
-    inProcess: false,
+    process: undefined,
     results: [],
 });
 
@@ -18,8 +18,13 @@ socket.on('connect', () => {
 
 socket.on('train-res', (...args) => state.results.push(args as TrainResults[]));
 
-socket.on('train-done', () => {
-    state.inProcess = false;
+socket.on('check-model', () => {
+    state.process = 'check';
+});
+
+socket.on('train-done', (...args) => {
+    state.results.push(args as TrainResults[]);
+    state.process = 'done';
 });
 
 socket.on('disconnect', () => {

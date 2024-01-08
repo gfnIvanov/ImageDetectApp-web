@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import { state, socket } from '@/socket';
 import * as yup from 'yup';
 import { Form, Field, ErrorMessage, GenericObject } from 'vee-validate';
+import Modal from '@/components/Modal.vue';
 import type { Params } from '@/types';
+
+const showModal = ref(false);
 
 const PARAMS: Params = {
     'test-size': 'Test size',
@@ -29,7 +32,7 @@ const results = computed(() => {
 });
 
 const startTrain = function (values: GenericObject) {
-    state.inProcess = true;
+    state.process = 'train';
     state.results = [];
     socket.emit('train-model', values);
 };
@@ -62,7 +65,10 @@ const startTrain = function (values: GenericObject) {
                 </div>
                 <div class="error"><ErrorMessage :name="key" /></div>
             </div>
-            <div v-if="state.inProcess" class="loader-block">
+            <div
+                v-if="state.process === 'train' || state.process === 'check'"
+                class="loader-block"
+            >
                 <div class="loader"></div>
             </div>
             <button v-else class="button-green" style="margin: 30px 0px">
@@ -70,13 +76,21 @@ const startTrain = function (values: GenericObject) {
             </button>
         </Form>
         <div style="height: 100px">
-            <div v-for="res in results" :key="res.iter" class="loss">
-                <div>epoch: {{ res.epoch }}</div>
-                <div>iter: {{ res.iter }}</div>
-                <div>loss: {{ res.loss }}</div>
+            <div v-if="state.process === 'train'">
+                <div v-for="res in results" :key="res.iter" class="loss">
+                    <div>epoch: {{ res.epoch }}</div>
+                    <div>iter: {{ res.iter }}</div>
+                    <div>loss: {{ res.loss }}</div>
+                </div>
+            </div>
+            <div v-if="state.process === 'check'">Проверка модели...</div>
+            <div v-if="state.process === 'done'">
+                Обучение завершено
+                <a @click="showModal = true"> (посмотреть отчёт)</a>
             </div>
         </div>
     </div>
+    <Modal :show="showModal" @close="showModal = false" />
 </template>
 
 <style scoped>
