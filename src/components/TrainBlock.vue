@@ -7,6 +7,7 @@ import Modal from '@/components/Modal.vue';
 import type { Params } from '@/types';
 
 const showModal = ref(false);
+const error = ref();
 
 const PARAMS: Params = {
     'test-size': 'Test size',
@@ -32,9 +33,17 @@ const results = computed(() => {
 });
 
 const startTrain = function (values: GenericObject) {
-    state.process = 'train';
-    state.results = [];
-    socket.emit('train-model', values);
+    try {
+        state.process = 'train';
+        state.results = [];
+        socket.emit('train-model', values, (res: any) => {
+            if (res.status === 500) {
+                error.value = 'Ошибка при обучении модели';
+            }
+        });
+    } catch (e) {
+        error.value = e;
+    }
 };
 </script>
 
@@ -89,6 +98,7 @@ const startTrain = function (values: GenericObject) {
                 <a @click="showModal = true"> (посмотреть отчёт)</a>
             </div>
         </div>
+        <span class="error">{{ error }}</span>
     </div>
     <Modal :show="showModal" @close="showModal = false" />
 </template>
